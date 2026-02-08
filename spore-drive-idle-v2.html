@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spore Drive Idle – Lite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      background: radial-gradient(circle at top, #1b2a3a 0%, #05060a 60%, #020308 100%);
+      color: #e5f2ff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+    .app {
+      width: 100%;
+      max-width: 480px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    header {
+      text-align: center;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.2rem;
+    }
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.7rem;
+    }
+    .card {
+      background: rgba(8, 16, 30, 0.95);
+      border-radius: 0.7rem;
+      padding: 0.6rem 0.7rem;
+      border: 1px solid rgba(120, 180, 255, 0.3);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    .stat-value {
+      font-size: 1.1rem;
+      margin-top: 0.1rem;
+    }
+    .main-button-wrapper {
+      margin-top: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .main-button {
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      cursor: pointer;
+      width: 100%;
+      max-width: 360px;
+      padding: 1rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #3bb2ff, #78ffce);
+      color: #02111e;
+      box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.6);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+      touch-action: manipulation;
+    }
+    .main-button:active {
+      transform: scale(0.96);
+      box-shadow: 0 0.25rem 0.7rem rgba(0, 0, 0, 0.9);
+    }
+    .small-text {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      text-align: center;
+    }
+    .readout {
+      min-height: 1.2rem;
+      font-size: 0.85rem;
+      text-align: center;
+      opacity: 0.95;
+      margin-top: 0.3rem;
+    }
+    .section-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.8;
+      margin-top: 0.8rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid rgba(120, 180, 255, 0.4);
+    }
+    .upgrades {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .upgrade-card {
+      background: rgba(5, 12, 26, 0.96);
+      border-radius: 0.6rem;
+      padding: 0.55rem 0.6rem;
+      border: 1px solid rgba(80, 130, 210, 0.5);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .upgrade-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+    .upgrade-name {
+      font-weight: 600;
+      font-size: 0.86rem;
+    }
+    .upgrade-level {
+      font-size: 0.76rem;
+      opacity: 0.7;
+    }
+    .upgrade-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.2rem;
+      gap: 0.6rem;
+    }
+    .btn-upgrade {
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #1b8cff, #48ffd2);
+      color: #020c14;
+      touch-action: manipulation;
+    }
+    .btn-upgrade:disabled {
+      background: rgba(70, 90, 120, 0.9);
+      color: rgba(215, 225, 245, 0.7);
+    }
+    .save-row {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.76rem;
+      flex-wrap: wrap;
+    }
+    .btn-small {
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(120, 180, 255, 0.6);
+      background: rgba(5, 12, 22, 0.95);
+      color: #e5f2ff;
+      font-size: 0.74rem;
+      touch-action: manipulation;
+    }
+    footer {
+      font-size: 0.7rem;
+      text-align: center;
+      opacity: 0.6;
+      margin-top: 0.6rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Spore Drive Idle – Lite</h1>
+      <p>You are Discovery’s spore drive interface. Keep the mycelial river flowing.</p>
+      <div class="stats">
+        <div class="card">
+          <div class="stat-label">Mycelial Charge (MC)</div>
+          <div class="stat-value" id="statSporeEnergy">0</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Gain</div>
+          <div class="stat-value">
+            <span id="statPerTap">1</span> / tap<br />
+            <span id="statPerSec">0</span> / sec
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Lifetime Throughput</div>
+          <div class="stat-value" id="statTotalGenerated">0</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Astromycology Insight (AI)</div>
+          <div class="stat-value" id="statRI">0</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-button-wrapper">
+      <button id="btnTap" class="main-button">Black Alert – Engage</button>
+      <div class="small-text">
+        Tap or hold to feed charge into the mycelial network.
+      </div>
+    </div>
+
+    <div class="readout" id="readout">
+      Stamets: “We’re synced. Start feeding the network when you’re ready.”
+    </div>
+
+    <div class="section-title">Engineering Upgrades</div>
+    <div class="upgrades">
+      <div class="upgrade-card">
+        <div class="upgrade-header">
+          <div>
+            <div class="upgrade-name">Stamets Neural Interface</div>
+            <div class="upgrade-level" id="u1Level">Tier 0</div>
+          </div>
+          <div id="u1Cost">Cost: 10 MC</div>
+        </div>
+        <div>Refined neural interface doubles the power of each manual jump.</div>
+        <div class="upgrade-bottom">
+          <div>Tap Power x<span id="u1Multiplier">1</span></div>
+          <button class="btn-upgrade" id="btnU1">Implement</button>
+        </div>
+      </div>
+
+      <div class="upgrade-card">
+        <div class="upgrade-header">
+          <div>
+            <div class="upgrade-name">Astromycology Lab Expansion</div>
+            <div class="upgrade-level" id="u2Level">Tier 0</div>
+          </div>
+          <div id="u2Cost">Cost: 20 MC</div>
+        </div>
+        <div>Extra growth bays provide a constant trickle of mycelial charge.</div>
+        <div class="upgrade-bottom">
+          <div>Idle +<span id="u2Idle">0.0</span> / sec</div>
+          <button class="btn-upgrade" id="btnU2">Implement</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Logs</div>
+    <div class="card">
+      <div class="save-row">
+        <div id="saveStatus">Last log sync: none</div>
+        <button class="btn-small" id="btnSave">Sync to ship’s log</button>
+      </div>
+    </div>
+
+    <footer>
+      Unofficial fan project. Runs entirely in your browser.
+    </footer>
+  </div>
+
+  <script>
+    // Minimal, compatibility-first JS (no arrow functions, no fancy syntax)
+
+    var SAVE_KEY = "sporeDriveIdleLiteV1";
+
+    var state = {
+      sporeEnergy: 0,
+      totalGenerated: 0,
+      totalTaps: 0,
+
+      baseTap: 1,
+      tapMultiplier: 1,
+
+      baseIdlePerSec: 0,
+      idleBonusPerLevel: 0.5, // each lab tier adds this much idle
+      innateIdlePerSec: 0.3,  // always-on idle for accessibility
+
+      u1Level: 0,
+      u2Level: 0,
+
+      researchInsight: 0,
+      secondsSinceLastInsight: 0,
+
+      lastTickTime: Date.now(),
+      lastSaveTime: null
+    };
+
+    function formatNumber(n) {
+      if (!isFinite(n)) return "0";
+      if (n < 1000) return n.toFixed(0);
+      var units = ["K", "M", "B", "T", "Q"];
+      var unitIndex = -1;
+      var value = n;
+      while (value >= 1000 && unitIndex < units.length - 1) {
+        value /= 1000;
+        unitIndex++;
+      }
+      return value.toFixed(2) + units[unitIndex];
+    }
+
+    function getTapGain() {
+      return state.baseTap * state.tapMultiplier;
+    }
+
+    function getIdlePerSec() {
+      return state.innateIdlePerSec + (state.u2Level * state.idleBonusPerLevel);
+    }
+
+    function updateSaveStatus(flash) {
+      var el = document.getElementById("saveStatus");
+      if (!state.lastSaveTime) {
+        el.textContent = "Last log sync: none";
+        return;
+      }
+      var diffSec = Math.floor((Date.now() - state.lastSaveTime) / 1000);
+      var label;
+      if (diffSec < 60) label = diffSec + "s ago";
+      else if (diffSec < 3600) label = Math.floor(diffSec / 60) + "m ago";
+      else label = Math.floor(diffSec / 3600) + "h ago";
+      el.textContent = "Last log sync: " + label;
+      if (flash) {
+        el.style.color = "#78ffce";
+        setTimeout(function () {
+          el.style.color = "";
+        }, 700);
+      }
+    }
+
+    function saveGame() {
+      try {
+        var data = {
+          sporeEnergy: state.sporeEnergy,
+          totalGenerated: state.totalGenerated,
+          totalTaps: state.totalTaps,
+          baseTap: state.baseTap,
+          tapMultiplier: state.tapMultiplier,
+          baseIdlePerSec: state.baseIdlePerSec,
+          innateIdlePerSec: state.innateIdlePerSec,
+          u1Level: state.u1Level,
+          u2Level: state.u2Level,
+          researchInsight: state.researchInsight,
+          secondsSinceLastInsight: state.secondsSinceLastInsight,
+          lastSaveTime: Date.now()
+        };
+        localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+        state.lastSaveTime = data.lastSaveTime;
+        updateSaveStatus(true);
+      } catch (e) {
+        // ignore save errors
+      }
+    }
+
+    function loadGame() {
+      var raw = null;
+      try {
+        raw = localStorage.getItem(SAVE_KEY);
+      } catch (e) {
+        raw = null;
+      }
+      if (!raw) {
+        state.lastTickTime = Date.now();
+        updateUI();
+        return;
+      }
+      try {
+        var data = JSON.parse(raw);
+        if (data && typeof data === "object") {
+          if (typeof data.sporeEnergy === "number") state.sporeEnergy = data.sporeEnergy;
+          if (typeof data.totalGenerated === "number") state.totalGenerated = data.totalGenerated;
+          if (typeof data.totalTaps === "number") state.totalTaps = data.totalTaps;
+          if (typeof data.baseTap === "number") state.baseTap = data.baseTap;
+          if (typeof data.tapMultiplier === "number") state.tapMultiplier = data.tapMultiplier;
+          if (typeof data.baseIdlePerSec === "number") state.baseIdlePerSec = data.baseIdlePerSec;
+          if (typeof data.innateIdlePerSec === "number") state.innateIdlePerSec = data.innateIdlePerSec;
+          if (typeof data.u1Level === "number") state.u1Level = data.u1Level;
+          if (typeof data.u2Level === "number") state.u2Level = data.u2Level;
+          if (typeof data.researchInsight === "number") state.researchInsight = data.researchInsight;
+          if (typeof data.secondsSinceLastInsight === "number") state.secondsSinceLastInsight = data.secondsSinceLastInsight;
+          if (typeof data.lastSaveTime === "number") state.lastSaveTime = data.lastSaveTime;
+        }
+      } catch (e) {
+        // ignore load errors
+      }
+      state.lastTickTime = Date.now();
+      updateUI();
+    }
+
+    function setReadout(text) {
+      var el = document.getElementById("readout");
+      el.textContent = text;
+    }
+
+    function updateUI() {
+      document.getElementById("statSporeEnergy").textContent = formatNumber(state.sporeEnergy);
+      document.getElementById("statTotalGenerated").textContent = formatNumber(state.totalGenerated);
+      document.getElementById("statPerTap").textContent = getTapGain().toFixed(2);
+      document.getElementById("statPerSec").textContent = getIdlePerSec().toFixed(2);
+      document.getElementById("statRI").textContent = state.researchInsight.toFixed(0);
+
+      // upgrades
+      var u1Cost = getU1Cost();
+      var u2Cost = getU2Cost();
+
+      document.getElementById("u1Level").textContent = "Tier " + state.u1Level;
+      document.getElementById("u2Level").textContent = "Tier " + state.u2Level;
+      document.getElementById("u1Cost").textContent = "Cost: " + formatNumber(u1Cost) + " MC";
+      document.getElementById("u2Cost").textContent = "Cost: " + formatNumber(u2Cost) + " MC";
+      document.getElementById("u1Multiplier").textContent = (state.tapMultiplier).toFixed(1);
+      document.getElementById("u2Idle").textContent = (state.u2Level * state.idleBonusPerLevel).toFixed(1);
+
+      var btnU1 = document.getElementById("btnU1");
+      var btnU2 = document.getElementById("btnU2");
+      btnU1.disabled = state.sporeEnergy < u1Cost;
+      btnU2.disabled = state.sporeEnergy < u2Cost;
+
+      updateSaveStatus(false);
+    }
+
+    function getU1Cost() {
+      // basic exponential cost
+      return 10 * Math.pow(2, state.u1Level);
+    }
+
+    function getU2Cost() {
+      return 20 * Math.pow(1.8, state.u2Level);
+    }
+
+    function handleTap(count) {
+      if (typeof count !== "number" || count <= 0) count = 1;
+      var gainPerTap = getTapGain();
+      var totalGain = gainPerTap * count;
+      state.sporeEnergy += totalGain;
+      state.totalGenerated += totalGain;
+      state.totalTaps += count;
+      setReadout("The cube hums as Discovery skims the mycelial river.");
+      updateUI();
+    }
+
+    function buyU1() {
+      var cost = getU1Cost();
+      if (state.sporeEnergy < cost) return;
+      state.sporeEnergy -= cost;
+      state.u1Level += 1;
+      state.tapMultiplier *= 2;
+      setReadout("Stamets: “Interface upgraded. You should feel more kick in each jump.”");
+      updateUI();
+      saveGame();
+    }
+
+    function buyU2() {
+      var cost = getU2Cost();
+      if (state.sporeEnergy < cost) return;
+      state.sporeEnergy -= cost;
+      state.u2Level += 1;
+      setReadout("Tilly: “Lab expansion online. Spores are practically farming themselves.”");
+      updateUI();
+      saveGame();
+    }
+
+    function gameTick() {
+      var now = Date.now();
+      var dtSec = Math.max(0, (now - state.lastTickTime) / 1000);
+      state.lastTickTime = now;
+
+      // idle gain
+      var idlePerSec = getIdlePerSec();
+      if (idlePerSec > 0 && dtSec > 0) {
+        var idleGain = idlePerSec * dtSec;
+        state.sporeEnergy += idleGain;
+        state.totalGenerated += idleGain;
+      }
+
+      // research insight – simple: 1 every 30s
+      state.secondsSinceLastInsight += dtSec;
+      var threshold = 30;
+      while (state.secondsSinceLastInsight >= threshold) {
+        state.secondsSinceLastInsight -= threshold;
+        state.researchInsight += 1;
+      }
+
+      updateUI();
+      // auto-save every 10s
+      if (typeof state._saveTimer === "undefined") state._saveTimer = 0;
+      state._saveTimer += dtSec;
+      if (state._saveTimer >= 10) {
+        state._saveTimer = 0;
+        saveGame();
+      }
+    }
+
+    function init() {
+      loadGame();
+      setReadout("Ready: tap or hold Black Alert to feed the mycelial network.");
+      updateUI();
+
+      var btnTap = document.getElementById("btnTap");
+      var isHolding = false;
+      var holdInterval = null;
+
+      function startHold() {
+        if (isHolding) return;
+        isHolding = true;
+        handleTap(1);
+        holdInterval = setInterval(function () {
+          handleTap(1);
+        }, 100);
+      }
+
+      function stopHold() {
+        isHolding = false;
+        if (holdInterval) {
+          clearInterval(holdInterval);
+          holdInterval = null;
+        }
+      }
+
+      // Mouse
+      btnTap.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        startHold();
+      });
+      btnTap.addEventListener("mouseup", function () {
+        stopHold();
+      });
+      btnTap.addEventListener("mouseleave", function () {
+        stopHold();
+      });
+
+      // Touch
+      btnTap.addEventListener("touchstart", function (e) {
+        e.preventDefault();
+        startHold();
+      }, { passive: false });
+      btnTap.addEventListener("touchend", function () {
+        stopHold();
+      });
+      btnTap.addEventListener("touchcancel", function () {
+        stopHold();
+      });
+
+      // Single tap fallback via click
+      btnTap.onclick = function () {
+        handleTap(1);
+      };
+
+      document.getElementById("btnU1").addEventListener("click", buyU1);
+      document.getElementById("btnU2").addEventListener("click", buyU2);
+      document.getElementById("btnSave").addEventListener("click", function () {
+        saveGame();
+        setReadout("Ship’s log updated. If Control reads this, that’s a tomorrow problem.");
+      });
+
+      setInterval(gameTick, 1000);
+    }
+
+    window.addEventListener("load", init);
+    window.addEventListener("beforeunload", saveGame);
+  </script>
+</body>
+</html>
