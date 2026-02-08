@@ -649,40 +649,40 @@
       }
       try {
         const data = JSON.parse(raw);
-        state.sporeEnergy = data.sporeEnergy ?? 0;
-        state.totalGenerated = data.totalGenerated ?? 0;
-        state.totalTaps = data.totalTaps ?? 0;
-        state.globalMultiplier = data.globalMultiplier ?? 1;
-        state.baseIdlePerSec = data.baseIdlePerSec ?? 0;
-        state.idleMultiplier = data.idleMultiplier ?? 1;
-        state.autoTapsPerSec = data.autoTapsPerSec ?? 0;
-        state.researchInsight = data.researchInsight ?? 0;
-        state.secondsSinceLastInsight = data.secondsSinceLastInsight ?? 0;
+        state.sporeEnergy = (data.sporeEnergy != null ? data.sporeEnergy : 0);
+        state.totalGenerated = (data.totalGenerated != null ? data.totalGenerated : 0);
+        state.totalTaps = (data.totalTaps != null ? data.totalTaps : 0);
+        state.globalMultiplier = (data.globalMultiplier != null ? data.globalMultiplier : 1);
+        state.baseIdlePerSec = (data.baseIdlePerSec != null ? data.baseIdlePerSec : 0);
+        state.idleMultiplier = (data.idleMultiplier != null ? data.idleMultiplier : 1);
+        state.autoTapsPerSec = (data.autoTapsPerSec != null ? data.autoTapsPerSec : 0);
+        state.researchInsight = (data.researchInsight != null ? data.researchInsight : 0);
+        state.secondsSinceLastInsight = (data.secondsSinceLastInsight != null ? data.secondsSinceLastInsight : 0);
 
-        state.sphereData = data.sphereData ?? 0;
-        state.sphereDataSpent = data.sphereDataSpent ?? 0;
-        state.totalSphereEarned = data.totalSphereEarned ?? 0;
-        state.totalSyncs = data.totalSyncs ?? 0;
-        state.lastSaveTime = data.lastSaveTime ?? null;
+        state.sphereData = (data.sphereData != null ? data.sphereData : 0);
+        state.sphereDataSpent = (data.sphereDataSpent != null ? data.sphereDataSpent : 0);
+        state.totalSphereEarned = (data.totalSphereEarned != null ? data.totalSphereEarned : 0);
+        state.totalSyncs = (data.totalSyncs != null ? data.totalSyncs : 0);
+        state.lastSaveTime = (data.lastSaveTime != null ? data.lastSaveTime : null);
 
         if (Array.isArray(data.upgrades)) {
           data.upgrades.forEach(savedU => {
             const u = state.upgrades.find(x => x.id === savedU.id);
-            if (u) u.level = savedU.level ?? 0;
+            if (u) u.level = (savedU.level != null ? savedU.level : 0);
           });
         }
 
         if (Array.isArray(data.alignments)) {
           data.alignments.forEach(savedA => {
             const a = state.alignments.find(x => x.id === savedA.id);
-            if (a) a.level = savedA.level ?? 0;
+            if (a) a.level = (savedA.level != null ? savedA.level : 0);
           });
         }
 
         if (Array.isArray(data.sphereSystems)) {
           data.sphereSystems.forEach(savedS => {
             const s = state.sphereSystems.find(x => x.id === savedS.id);
-            if (s) s.level = savedS.level ?? 0;
+            if (s) s.level = (savedS.level != null ? savedS.level : 0);
           });
         }
 
@@ -797,7 +797,8 @@
       return base;
     }
 
-    function getEffectiveIdlePerSec(forOffline = false) {
+    function getEffectiveIdlePerSec(forOffline) {
+      if (typeof forOffline === 'undefined') { forOffline = false; }
       // Always include a small innate idle component for accessibility
       let idle = (state.baseIdlePerSec + INNATE_IDLE_PER_SEC) * state.idleMultiplier;
 
@@ -1343,7 +1344,8 @@ This will compress this entire run into " +
     }
 
     // ---------- INPUT / LOOP ----------
-    function handleTap(count = 1) {
+    function handleTap(count) {
+      if (typeof count === 'undefined') { count = 1; }
       const gainPerTap = getTapGain();
       const totalGain = gainPerTap * count;
       state.sporeEnergy += totalGain;
